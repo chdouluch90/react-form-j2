@@ -29,7 +29,7 @@ export const CustomMap = props => {
                     return (country.latlng[0])
                         ? <Marker key={index} position={country.latlng}>
                             <Popup>
-                                A pretty CSS3 popup. <br /> Easily customizable.
+                                {country.name}
                             </Popup>
                         </Marker>
                         : null

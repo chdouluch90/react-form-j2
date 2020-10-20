@@ -47656,7 +47656,7 @@ var CustomMap = function CustomMap(props) {
     return country.latlng[0] ? /*#__PURE__*/_react.default.createElement(_reactLeaflet.Marker, {
       key: index,
       position: country.latlng
-    }, /*#__PURE__*/_react.default.createElement(_reactLeaflet.Popup, null, "A pretty CSS3 popup. ", /*#__PURE__*/_react.default.createElement("br", null), " Easily customizable.")) : null;
+    }, /*#__PURE__*/_react.default.createElement(_reactLeaflet.Popup, null, country.name)) : null;
   }));
 };
 
