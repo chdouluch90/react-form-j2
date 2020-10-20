@@ -28285,7 +28285,87 @@ if ("development" === 'production') {
 } else {
   module.exports = require('./cjs/react-dom.development.js');
 }
-},{"./cjs/react-dom.development.js":"../node_modules/react-dom/cjs/react-dom.development.js"}],"../node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
+},{"./cjs/react-dom.development.js":"../node_modules/react-dom/cjs/react-dom.development.js"}],"../node_modules/leaflet/dist/images/marker-icon.png":[function(require,module,exports) {
+module.exports="/marker-icon.28bcaf97.png";
+},{}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"../node_modules/leaflet/dist/leaflet.css":[function(require,module,exports) {
+
+        var reloadCSS = require('_css_loader');
+        module.hot.dispose(reloadCSS);
+        module.hot.accept(reloadCSS);
+      
+},{"./images\\layers.png":[["layers.833a3ad0.png","../node_modules/leaflet/dist/images/layers.png"],"../node_modules/leaflet/dist/images/layers.png"],"./images\\layers-2x.png":[["layers-2x.7859b0a7.png","../node_modules/leaflet/dist/images/layers-2x.png"],"../node_modules/leaflet/dist/images/layers-2x.png"],"./images\\marker-icon.png":[["marker-icon.28bcaf97.png","../node_modules/leaflet/dist/images/marker-icon.png"],"../node_modules/leaflet/dist/images/marker-icon.png"],"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../src/stylesheets/main.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"../../node_modules/leaflet/dist/leaflet.css":"../node_modules/leaflet/dist/leaflet.css","_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/axios/lib/helpers/bind.js":[function(require,module,exports) {
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -44174,8 +44254,6 @@ var global = arguments[3];
 })));
 
 
-},{}],"../node_modules/leaflet/dist/images/marker-icon.png":[function(require,module,exports) {
-module.exports="/marker-icon.28bcaf97.png";
 },{}],"../node_modules/leaflet/dist/images/marker-shadow.png":[function(require,module,exports) {
 module.exports="/marker-shadow.4ea910b7.png";
 },{}],"../src/CustomMap/leafletConfig.js":[function(require,module,exports) {
@@ -47631,15 +47709,18 @@ var _reactLeaflet = require("react-leaflet");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var CustomMap = function CustomMap(props) {
-  var allCountries = props.allCountries;
+  var allCountries = props.allCountries,
+      onCountryClick = props.onCountryClick;
 
   var ListMarkers = function ListMarkers() {
     return allCountries.map(function (country, index) {
-      console.log(country.latlng[0]);
-      return /*#__PURE__*/_react.default.createElement(_reactLeaflet.Marker, {
+      return country.latlng[0] ? /*#__PURE__*/_react.default.createElement(_reactLeaflet.Marker, {
+        onclick: function onclick() {
+          return onCountryClick(country);
+        },
         key: index,
-        position: [0, 0]
-      }, /*#__PURE__*/_react.default.createElement(_reactLeaflet.Popup, null, "A pretty CSS3 popup. ", /*#__PURE__*/_react.default.createElement("br", null), " Easily customizable."));
+        position: country.latlng
+      }, /*#__PURE__*/_react.default.createElement(_reactLeaflet.Popup, null, country.name)) : null;
     });
   };
 
@@ -47650,96 +47731,40 @@ var CustomMap = function CustomMap(props) {
     maxZoom: 5,
     minZoom: 1
   }, /*#__PURE__*/_react.default.createElement(_reactLeaflet.TileLayer, {
-    attribution: "&copy <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
+    attribution: '&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  }), allCountries.map(function (country, index) {
-    return country.latlng[0] ? /*#__PURE__*/_react.default.createElement(_reactLeaflet.Marker, {
-      key: index,
-      position: country.latlng
-    }, /*#__PURE__*/_react.default.createElement(_reactLeaflet.Popup, null, country.name)) : null;
-  }));
+  }), /*#__PURE__*/_react.default.createElement(ListMarkers, null));
 };
 
 exports.CustomMap = CustomMap;
-},{"react":"../node_modules/react/index.js","./leafletConfig":"../src/CustomMap/leafletConfig.js","react-leaflet":"../node_modules/react-leaflet/es/index.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
+},{"react":"../node_modules/react/index.js","./leafletConfig":"../src/CustomMap/leafletConfig.js","react-leaflet":"../node_modules/react-leaflet/es/index.js"}],"../src/Infos/index.js":[function(require,module,exports) {
+"use strict";
 
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Infos = void 0;
 
-  return bundleURL;
-}
+var _react = _interopRequireDefault(require("react"));
 
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-    if (matches) {
-      return getBaseURL(matches[0]);
-    }
-  }
-
-  return '/';
-}
-
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
-}
-
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
-
-function updateLink(link) {
-  var newLink = link.cloneNode();
-
-  newLink.onload = function () {
-    link.remove();
+var Infos = function Infos(props) {
+  var CountryInfoList = function CountryInfoList() {
+    return props.currentCountry ? /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, Object.keys(props.currentCountry).map(function (name, index) {
+      return /*#__PURE__*/_react.default.createElement("div", {
+        key: index
+      }, name, ":", JSON.stringify(props.currentCountry[name]));
+    })) : null;
   };
 
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
+  return /*#__PURE__*/_react.default.createElement("div", {
+    className: "info-container"
+  }, /*#__PURE__*/_react.default.createElement(CountryInfoList, null));
+};
 
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
-    return;
-  }
-
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
-
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
-    }
-
-    cssTimeout = null;
-  }, 50);
-}
-
-module.exports = reloadCSS;
-},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"../node_modules/leaflet/dist/leaflet.css":[function(require,module,exports) {
-
-        var reloadCSS = require('_css_loader');
-        module.hot.dispose(reloadCSS);
-        module.hot.accept(reloadCSS);
-      
-},{"./images\\layers.png":[["layers.833a3ad0.png","../node_modules/leaflet/dist/images/layers.png"],"../node_modules/leaflet/dist/images/layers.png"],"./images\\layers-2x.png":[["layers-2x.7859b0a7.png","../node_modules/leaflet/dist/images/layers-2x.png"],"../node_modules/leaflet/dist/images/layers-2x.png"],"./images\\marker-icon.png":[["marker-icon.28bcaf97.png","../node_modules/leaflet/dist/images/marker-icon.png"],"../node_modules/leaflet/dist/images/marker-icon.png"],"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../src/stylesheets/main.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"../../node_modules/leaflet/dist/leaflet.css":"../node_modules/leaflet/dist/leaflet.css","_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../src/Application.js":[function(require,module,exports) {
+exports.Infos = Infos;
+},{"react":"../node_modules/react/index.js"}],"../src/Application.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47753,7 +47778,7 @@ var _httpServices = require("./http-services");
 
 var _CustomMap = require("./CustomMap");
 
-require("./stylesheets/main.scss");
+var _Infos = require("./Infos");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -47779,6 +47804,8 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var Application = /*#__PURE__*/function (_React$Component) {
   _inherits(Application, _React$Component);
 
@@ -47790,43 +47817,37 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _classCallCheck(this, Application);
 
     _this = _super.call(this, props);
+
+    _defineProperty(_assertThisInitialized(_this), "onCountryClick", function (country) {
+      _this.setState({
+        currentCountry: country
+      });
+    });
+
     _this.state = {
-      allCountries: []
+      allCountries: [],
+      currentCountry: null
     };
-    console.log(props.children);
     return _this;
   }
 
   _createClass(Application, [{
     key: "render",
     value: function render() {
-      var _this2 = this;
-
-      var Children = function Children() {
-        return _this2.props.children;
-      };
-
-      var CountriesList = function CountriesList() {
-        return _this2.state.allCountries.map(function (countriy, index) {
-          return /*#__PURE__*/_react.default.createElement("div", {
-            key: index
-          }, countriy.name);
-        });
-      };
-
-      return /*#__PURE__*/_react.default.createElement(_CustomMap.CustomMap, {
+      return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_CustomMap.CustomMap, {
+        onCountryClick: this.onCountryClick,
         allCountries: this.state.allCountries
-      });
+      }), /*#__PURE__*/_react.default.createElement(_Infos.Infos, {
+        currentCountry: this.state.currentCountry
+      }));
     }
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this3 = this;
+      var _this2 = this;
 
       _httpServices.Services.getAllCountries().then(function (results) {
-        console.log(results.data);
-
-        _this3.setState({
+        _this2.setState({
           allCountries: results.data
         });
       });
@@ -47837,24 +47858,26 @@ var Application = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.Application = Application;
-},{"react":"../node_modules/react/index.js","./http-services":"../src/http-services/index.js","./CustomMap":"../src/CustomMap/index.js","./stylesheets/main.scss":"../src/stylesheets/main.scss"}],"../src/index.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","./http-services":"../src/http-services/index.js","./CustomMap":"../src/CustomMap/index.js","./Infos":"../src/Infos/index.js"}],"../src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
 
+require("./stylesheets/main.scss");
+
 var _Application = require("./Application");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var root = document.getElementById("root");
+var root = document.getElementById('root');
 var actualDate = new Date();
 
 _reactDom.default.render( /*#__PURE__*/_react.default.createElement(_Application.Application, {
   propriete1: actualDate
-}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h3", null, "titre"), /*#__PURE__*/_react.default.createElement("p", null, "paragraphe"))), root);
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./Application":"../src/Application.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+}, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h3", null, "Ceci est un titre"), /*#__PURE__*/_react.default.createElement("p", null, "C'est un paragraphe"))), root);
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./stylesheets/main.scss":"../src/stylesheets/main.scss","./Application":"../src/Application.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -47882,7 +47905,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51068" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64968" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
